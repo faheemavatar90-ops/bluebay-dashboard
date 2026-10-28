@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlueBay Pack — KPI Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="/chart.umd.js"></script>
+<style>
+/* ═══════════════════════════════════════════════
+   BLUEBAY PACK — BRAND TOKENS
+   Primary: Deep Navy #0C1F3F  Mid Navy #163560  Accent Blue #1565C0
+   Steel: #4FC3F7  Gold: #FFB300  White: #FFFFFF
+   Industrial, professional, authoritative
+═══════════════════════════════════════════════ */
+:root {
+  --bb-deep:    #081529;
+  --bb-navy:    #0C1F3F;
+  --bb-mid:     #112a52;
+  --bb-panel:   #142d58;
+  --bb-card:    #163560;
+  --bb-border:  #1e4278;
+  --bb-light:   #1f4d8c;
+  --bb-steel:   #4FC3F7;
+  --bb-steel2:  #29B6F6;
+  --bb-white:   #FFFFFF;
+  --bb-offwhite:#D6E4F7;
+  --bb-muted:   #6893BF;
+  --bb-gold:    #FFB300;
+  --bb-green:   #00E676;
+  --bb-red:     #FF1744;
+  --bb-orange:  #FF6D00;
+  --bb-silver:  #B0BEC5;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: var(--bb-deep);
+  color: var(--bb-white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── LAYOUT ── */
+.app { display:flex; height:100vh; overflow:hidden; }
+
+/* ══════════════ SIDEBAR ══════════════ */
+.sidebar {
+  width: 240px;
+  background: var(--bb-navy);
+  border-right: 1px solid var(--bb-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+/* subtle diagonal stripe texture */
+.sidebar::before {
+  content:'';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 40px,
+    rgba(255,255,255,.012) 40px,
+    rgba(255,255,255,.012) 41px
+  );
+  pointer-events: none;
+}
+
+/* LOGO AREA */
+.logo-area {
+  padding: 20px 18px 16px;
+  border-bottom: 2px solid var(--bb-steel);
+  background: linear-gradient(180deg, rgba(21,101,192,.2) 0%, transparent 100%);
+  position: relative;
+}
+.logo-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.logo-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #1565C0, #0D47A1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border: 1px solid rgba(79,195,247,.4);
+  box-shadow: 0 4px 14px rgba(21,101,192,.5);
+  position: relative;
+  overflow: hidden;
+}
+.logo-icon::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(135deg, rgba(255,255,255,.1) 0%, transparent 60%);
+}
+.logo-text-main {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--bb-white);
+  line-height: 1;
+  letter-spacing: 1px;
+}
+.logo-text-main .blue { color: var(--bb-steel); }
+.logo-tagline {
+  font-size: 8.5px;
+  color: var(--bb-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.logo-detail {
+  display: flex;
+  gap: 8px;
+  font-size: 8px;
+  color: var(--bb-muted);
+  letter-spacing: .5px;
+}
+.logo-detail span { color: var(--bb-steel); font-weight: 600; }
+
+/* NAV */
+.nav { flex:1; padding:10px 0; overflow-y:auto; }
+.nav::-webkit-scrollbar { width:3px; }
+.nav::-webkit-scrollbar-thumb { background:var(--bb-border); border-radius:2px; }
+
+.nav-group-label {
+  padding: 12px 18px 4px;
+  font-size: 8px;
+  color: var(--bb-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--bb-muted);
+  transition: all .2s;
+  border-left: 3px solid transparent;
+  letter-spacing: .3px;
+}
+.nav-item:hover { color: var(--bb-offwhite); background:rgba(79,195,247,.07); }
+.nav-item.active {
+  color: var(--bb-steel);
+  border-left-color: var(--bb-steel);
+  background: linear-gradient(90deg, rgba(79,195,247,.12), transparent);
+}
+.nav-item .ni { font-size:14px; width:18px; text-align:center; }
+.nav-badge {
+  margin-left:auto;
+  background:var(--bb-red);
+  color:#fff;
+  font-size:8px;
+  padding:1px 6px;
+  border-radius:20px;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+.nav-badge.gold { background:var(--bb-gold); color: var(--bb-navy); }
+
+/* SIDEBAR BOTTOM */
+.sidebar-footer {
+  padding: 14px 18px;
+  border-top: 1px solid var(--bb-border);
+  background: rgba(0,0,0,.2);
+}
+.company-info {
+  font-size: 9px;
+  color: var(--bb-muted);
+  line-height: 1.8;
+  letter-spacing: .3px;
+}
+.company-info a { color: var(--bb-steel); text-decoration: none; }
+.online-dot {
+  width: 7px; height: 7px;
+  background: var(--bb-green);
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  animation: blink 2.5s infinite;
+  box-shadow: 0 0 6px var(--bb-green);
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ══════════════ MAIN ══════════════ */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+/* TOPBAR */
+.topbar {
+  background: var(--bb-navy);
+  border-bottom: 1px solid var(--bb-border);
+  padding: 0 24px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+  position: relative;
+}
+.topbar::after {
+  content:'';
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--bb-steel),transparent);
+}
+.page-title {
+  font-family:'Rajdhani',sans-serif;
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:.5px;
+  flex:1;
+  color:var(--bb-white);
+}
+.page-title .breadcrumb {
+  font-size:11px;
+  color:var(--bb-muted);
+  font-family:'Montserrat';
+  font-weight:400;
+  margin-top:1px;
+}
+
+.role-switcher {
+  display:flex;
+  gap:2px;
+  background:rgba(0,0,0,.3);
+  border:1px solid var(--bb-border);
+  border-radius:8px;
+  padding:3px;
+}
+.role-btn {
+  padding:5px 12px;
+  border-radius:6px;
+  font-size:10px;
+  font-weight:600;
+  cursor:pointer;
+  color:var(--bb-muted);
+  transition:all .2s;
+  letter-spacing:.5px;
+}
+.role-btn.active { background:var(--bb-steel2); color:var(--bb-navy); }
+
+.topbar-clock {
+  font-family:'Rajdhani',sans-serif;
+  font-size:13px;
+  color:var(--bb-steel);
+  font-weight:600;
+  letter-spacing:1px;
+}
+
+.btn {
+  padding:7px 14px;
+  border-radius:7px;
+  border:none;
+  cursor:pointer;
+  font-family:'Montserrat';
+  font-size:10px;
+  font-weight:700;
+  transition:all .2s;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.btn-primary { background:linear-gradient(135deg,#1565C0,#0D47A1); color:var(--bb-white); border:1px solid rgba(79,195,247,.3); }
+.btn-primary:hover { background:linear-gradient(135deg,#1976D2,#1565C0); transform:translateY(-1px); box-shadow:0 4px 14px rgba(21,101,192,.5); }
+.btn-outline { background:transparent; color:var(--bb-muted); border:1px solid var(--bb-border); }
+.btn-outline:hover { border-color:var(--bb-steel); color:var(--bb-steel); }
+.btn-sm { padding:4px 10px; font-size:9px; }
+.btn-action {
+  background:rgba(79,195,247,.1);
+  border:1px solid rgba(79,195,247,.25);
+  color:var(--bb-steel);
+  padding:3px 10px;
+  font-size:9px;
+  border-radius:5px;
+  cursor:pointer;
+  font-family:'Montserrat';
+  font-weight:600;
+  transition:all .2s;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+}
+.btn-action:hover { background:var(--bb-steel2); color:var(--bb-navy); }
+.btn-escalate {
+  background:rgba(255,23,68,.1);
+  border:1px solid rgba(255,23,68,.25);
+  color:var(--bb-red);
+  padding:3px 10px;
+  font-size:9px;
+  border-radius:5px;
+  cursor:pointer;
+  font-family:'Montserrat';
+  font-weight:600;
+  transition:all .2s;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+}
+.btn-escalate:hover { background:var(--bb-red); color:#fff; }
+
+/* CONTENT */
+.content { flex:1; overflow-y:auto; padding:18px 22px 24px; }
+.content::-webkit-scrollbar { width:4px; }
+.content::-webkit-scrollbar-thumb { background:var(--bb-border); border-radius:2px; }
+
+/* ══════════════ PANELS ══════════════ */
+.panel { display:none; animation:panelIn .3s ease; }
+.panel.active { display:block; }
+@keyframes panelIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══════════════ SECTION LABEL ══════════════ */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--bb-steel);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  margin-top: 4px;
+}
+.section-label::after {
+  content:'';
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,var(--bb-border),transparent);
+}
+
+/* ══════════════ KPI STRIP ══════════════ */
+.kpi-strip { display:grid; gap:10px; margin-bottom:14px; }
+.kpi-8 { grid-template-columns:repeat(8,1fr); }
+.kpi-6 { grid-template-columns:repeat(6,1fr); }
+.kpi-4 { grid-template-columns:repeat(4,1fr); }
+
+.kpi {
+  background: var(--bb-card);
+  border: 1px solid var(--bb-border);
+  border-radius: 10px;
+  padding: 13px 14px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+  cursor: default;
+}
+.kpi:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.3); }
+.kpi::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+}
+.kpi.k-blue::before   { background:var(--bb-steel); }
+.kpi.k-green::before  { background:var(--bb-green); }
+.kpi.k-red::before    { background:var(--bb-red); }
+.kpi.k-gold::before   { background:var(--bb-gold); }
+.kpi.k-cyan::before   { background:var(--bb-steel2); }
+.kpi.k-orange::before { background:var(--bb-orange); }
+.kpi.k-silver::before { background:var(--bb-silver); }
+.kpi.k-purple::before { background:#CE93D8; }
+
+.kpi-lbl { font-size:8.5px; color:var(--bb-muted); text-transform:uppercase; letter-spacing:.8px; margin-bottom:6px; font-weight:600; }
+.kpi-val { font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:700; line-height:1; margin-bottom:3px; }
+.kpi-sub { font-size:9px; font-weight:500; }
+.up { color:var(--bb-green); }
+.dn { color:var(--bb-red); }
+.kpi-ico { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:26px; opacity:.1; }
+
+/* ══════════════ GRIDS ══════════════ */
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px; }
+.g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
+.gw { display:grid; grid-template-columns:2fr 1fr; gap:12px; margin-bottom:12px; }
+.gw2 { display:grid; grid-template-columns:1fr 2fr; gap:12px; margin-bottom:12px; }
+.gw3 { display:grid; grid-template-columns:3fr 2fr; gap:12px; margin-bottom:12px; }
+
+/* ══════════════ CARD ══════════════ */
+.card {
+  background: var(--bb-card);
+  border: 1px solid var(--bb-border);
+  border-radius: 11px;
+  padding: 16px;
+}
+.card-hdr {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(30,66,120,.8);
+}
+.card-title {
+  font-family:'Rajdhani',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  color:var(--bb-white);
+  letter-spacing:.3px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.card-sub { font-size:9px; color:var(--bb-muted); font-weight:500; }
+
+/* ══════════════ TABLE ══════════════ */
+table { width:100%; border-collapse:collapse; font-size:11px; }
+th {
+  padding:6px 10px;
+  color:var(--bb-muted);
+  font-size:8.5px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  border-bottom:1px solid var(--bb-border);
+  text-align:left;
+  font-weight:600;
+  background:rgba(0,0,0,.15);
+}
+td { padding:8px 10px; border-bottom:1px solid rgba(30,66,120,.4); transition:background .15s; font-weight:500; }
+tr:hover td { background:rgba(79,195,247,.05); }
+tr:last-child td { border-bottom:none; }
+
+/* ══════════════ BADGE ══════════════ */
+.badge {
+  display:inline-flex;
+  align-items:center;
+  padding:2px 8px;
+  border-radius:4px;
+  font-size:8.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.b-green  { background:rgba(0,230,118,.12); color:var(--bb-green);  border:1px solid rgba(0,230,118,.25); }
+.b-red    { background:rgba(255,23,68,.12);  color:var(--bb-red);    border:1px solid rgba(255,23,68,.25); }
+.b-gold   { background:rgba(255,179,0,.12);  color:var(--bb-gold);   border:1px solid rgba(255,179,0,.25); }
+.b-blue   { background:rgba(79,195,247,.12); color:var(--bb-steel);  border:1px solid rgba(79,195,247,.25); }
+.b-orange { background:rgba(255,109,0,.12);  color:var(--bb-orange); border:1px solid rgba(255,109,0,.25); }
+.b-muted  { background:rgba(176,190,197,.1); color:var(--bb-silver); border:1px solid rgba(176,190,197,.2); }
+
+/* ══════════════ PROGRESS / BARS ══════════════ */
+.prog-row { display:flex; align-items:center; gap:10px; padding:5px 0; }
+.prog-lbl { font-size:10px; font-weight:600; width:95px; flex-shrink:0; color:var(--bb-offwhite); }
+.prog-track { flex:1; background:rgba(0,0,0,.3); border-radius:3px; height:7px; overflow:hidden; border:1px solid var(--bb-border); }
+.prog-fill { height:100%; border-radius:3px; transition:width .8s ease; }
+.prog-val { font-size:11px; font-weight:700; width:55px; text-align:right; flex-shrink:0; font-family:'Rajdhani',sans-serif; }
+
+/* ══════════════ AGING BLOCKS ══════════════ */
+.aging-blocks { display:flex; gap:8px; margin-bottom:14px; }
+.aging-block {
+  flex:1;
+  border-radius:8px;
+  padding:10px 12px;
+  text-align:center;
+  border:1px solid;
+}
+.aging-block .ab-val { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; }
+.aging-block .ab-lbl { font-size:8.5px; color:var(--bb-muted); margin-top:2px; font-weight:600; text-transform:uppercase; letter-spacing:.8px; }
+.ab-safe    { background:rgba(0,230,118,.08);  border-color:rgba(0,230,118,.25);  }
+.ab-caution { background:rgba(255,179,0,.08);  border-color:rgba(255,179,0,.25);  }
+.ab-warn    { background:rgba(255,109,0,.08);  border-color:rgba(255,109,0,.25);  }
+.ab-danger  { background:rgba(255,23,68,.08);  border-color:rgba(255,23,68,.25);  }
+
+/* ══════════════ ESCALATION ══════════════ */
+.esc-item {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  background:rgba(0,0,0,.2);
+  border-radius:8px;
+  margin-bottom:8px;
+  border-left:3px solid;
+  transition:transform .15s;
+}
+.esc-item:hover { transform:translateX(3px); }
+.esc-1 { border-left-color:var(--bb-gold); }
+.esc-2 { border-left-color:var(--bb-orange); }
+.esc-3 { border-left-color:var(--bb-red); }
+.esc-ico { font-size:20px; }
+.esc-title { font-size:11px; font-weight:700; color:var(--bb-white); margin-bottom:2px; }
+.esc-desc  { font-size:9px;  color:var(--bb-muted); }
+.esc-tag {
+  margin-left:auto;
+  font-size:9px;
+  font-weight:700;
+  padding:3px 9px;
+  border-radius:5px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  flex-shrink:0;
+}
+
+/* ══════════════ QUOTE AGING COLORS ══════════════ */
+.qa-g { color:var(--bb-green); font-weight:700; font-family:'Rajdhani'; font-size:13px; }
+.qa-y { color:var(--bb-gold);  font-weight:700; font-family:'Rajdhani'; font-size:13px; }
+.qa-r { color:var(--bb-red);   font-weight:700; font-family:'Rajdhani'; font-size:13px; }
+
+/* ══════════════ ALERT STRIP ══════════════ */
+.alert-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:14px; }
+.alert-tile {
+  border-radius:8px;
+  padding:10px 11px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid;
+  transition:transform .2s;
+}
+.alert-tile:hover { transform:translateY(-2px); }
+.at-red    { background:rgba(255,23,68,.08);  border-color:rgba(255,23,68,.3);  }
+.at-orange { background:rgba(255,109,0,.08);  border-color:rgba(255,109,0,.3);  }
+.at-gold   { background:rgba(255,179,0,.08);  border-color:rgba(255,179,0,.3);  }
+.at-blue   { background:rgba(79,195,247,.08); border-color:rgba(79,195,247,.3); }
+.alert-ico { font-size:17px; }
+.alert-txt { font-size:9.5px; font-weight:700; color:var(--bb-white); line-height:1.3; }
+.alert-cnt { font-size:8px; color:var(--bb-muted); margin-top:1px; }
+
+/* ══════════════ CHART WRAP ══════════════ */
+.chart-wrap { position:relative; width:100%; }
+
+/* ══════════════ METRIC TILE ══════════════ */
+.metric-tile {
+  background:rgba(0,0,0,.2);
+  border:1px solid var(--bb-border);
+  border-radius:8px;
+  padding:10px;
+  text-align:center;
+}
+.mt-val { font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:700; }
+.mt-lbl { font-size:8.5px; color:var(--bb-muted); text-transform:uppercase; letter-spacing:.8px; margin-top:2px; font-weight:600; }
+
+/* ══════════════ STAGE BARS ══════════════ */
+.stage-row { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid rgba(30,66,120,.4); }
+.stage-row:last-child { border-bottom:none; }
+.stage-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.stage-name { font-size:11px; font-weight:500; flex:1; }
+.stage-track { width:90px; background:rgba(0,0,0,.3); border-radius:3px; height:5px; flex-shrink:0; }
+.stage-bar { height:100%; border-radius:3px; }
+.stage-pct { font-size:11px; font-weight:700; width:40px; text-align:right; flex-shrink:0; font-family:'Rajdhani'; }
+
+/* ══════════════ CASH FORECAST ROW ══════════════ */
+.cf-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(30,66,120,.4); font-size:12px; }
+.cf-row:last-child { border-bottom:none; padding-top:10px; border-top:1px solid var(--bb-border); margin-top:4px; }
+
+/* ══════════════ BRAND HEADER STRIP ══════════════ */
+.brand-strip {
+  background:linear-gradient(135deg, var(--bb-panel) 0%, rgba(21,101,192,.15) 100%);
+  border:1px solid var(--bb-border);
+  border-radius:11px;
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+}
+.brand-strip::before {
+  content:'';
+  position:absolute;
+  top:-30px; right:-30px;
+  width:160px; height:160px;
+  background:radial-gradient(circle, rgba(79,195,247,.08) 0%, transparent 70%);
+}
+.brand-strip-logo { font-family:'Rajdhani',sans-serif; font-size:26px; font-weight:700; letter-spacing:1px; }
+.brand-strip-logo .b { color:var(--bb-steel); }
+.brand-strip-info { font-size:9px; color:var(--bb-muted); line-height:1.8; }
+.brand-strip-info span { color:var(--bb-steel); }
+.brand-strip-kpis { display:flex; gap:20px; }
+.bsk { text-align:center; }
+.bsk-val { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700; color:var(--bb-steel); }
+.bsk-lbl { font-size:8px; color:var(--bb-muted); text-transform:uppercase; letter-spacing:.8px; margin-top:1px; }
+.iso-badge {
+  display:flex; align-items:center; gap:6px;
+  background:rgba(0,230,118,.1);
+  border:1px solid rgba(0,230,118,.25);
+  border-radius:6px;
+  padding:5px 10px;
+  font-size:9px; font-weight:700; color:var(--bb-green);
+}
+
+/* ══════════════ PULSE ══════════════ */
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.pulse { animation:pulse 2s infinite; }
+
+/* ══════════════ TOAST ══════════════ */
+.toast {
+  position:fixed; bottom:20px; right:20px;
+  background:var(--bb-card);
+  border:1px solid var(--bb-steel);
+  border-radius:10px;
+  padding:12px 18px;
+  font-size:12px;
+  font-weight:600;
+  z-index:9999;
+  transform:translateY(60px);
+  opacity:0;
+  transition:all .3s;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast-ico { font-size:18px; }
+
+/* ══════════════ CONCENTRATION RISK ══════════════ */
+.risk-alert {
+  background:rgba(255,23,68,.07);
+  border:1px solid rgba(255,23,68,.22);
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:11px;
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* ══════════════ RESPONSIVE ══════════════ */
+@media(max-width:960px){
+  .sidebar { width:60px; }
+  .logo-text-main,.logo-detail,.logo-tagline,.nav-group-label,.nav-item span,.sidebar-footer,.logo-area .logo-box+* { display:none; }
+  .logo-area { padding:14px 10px; }
+  .nav-item { padding:10px; justify-content:center; }
+  .nav-item .ni { width:auto; }
+  .main { margin-left:0; }
+  .kpi-8,.kpi-6 { grid-template-columns:repeat(3,1fr); }
+  .g2,.g3,.g4,.gw,.gw2,.gw3 { grid-template-columns:1fr; }
+  .alert-grid { grid-template-columns:repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <div class="logo-box">
+      <div class="logo-icon">📦</div>
+      <div>
+        <div class="logo-text-main"><span class="blue">Blue</span>Bay Pack</div>
+        <div class="logo-tagline">Packing Systems</div>
+      </div>
+    </div>
+    <div class="logo-detail">
+      <div>CR: <span>4030374577</span></div>
+      <div>VAT: <span>312710826800003</span></div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-group-label">Executive</div>
+    <div class="nav-item active" onclick="go(this,'owner')"><span class="ni">👑</span><span>Owner Dashboard</span></div>
+    <div class="nav-item" onclick="go(this,'salesrep')"><span class="ni">🎯</span><span>Sales Rep View</span></div>
+    <div class="nav-item" onclick="go(this,'accounting')"><span class="ni">🧾</span><span>Accounting & Aging</span></div>
+
+    <div class="nav-group-label">Sales Intelligence</div>
+    <div class="nav-item" onclick="go(this,'quotes')"><span class="ni">📋</span><span>Quote Aging Control</span><span class="nav-badge">4</span></div>
+    <div class="nav-item" onclick="go(this,'pipeline')"><span class="ni">📊</span><span>Pipeline & Forecast</span></div>
+    <div class="nav-item" onclick="go(this,'collection')"><span class="ni">💰</span><span>Collection Aging</span><span class="nav-badge">3</span></div>
+
+    <div class="nav-group-label">Business Reports</div>
+    <div class="nav-item" onclick="go(this,'top10')"><span class="ni">🏆</span><span>Top 10 Customers</span></div>
+    <div class="nav-item" onclick="go(this,'inventory')"><span class="ni">📦</span><span>Inventory Intel</span><span class="nav-badge gold">!</span></div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="company-info">
+      <div><span class="online-dot"></span><span id="sysStatus">Connecting…</span></div>
+      <div>📞 057-367-3996</div>
+      <div>✉ <a href="mailto:sales@arabianprintpack.com">sales@arabianprintpack.com</a></div>
+      <div>🌐 <a href="https://www.bluebaypack.com" target="_blank">www.bluebaypack.com</a></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════
+     MAIN
+════════════════════════════════════ -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="pgTitle">Owner Dashboard</div>
+      <div class="page-title breadcrumb" id="pgSub">BlueBay Pack — KPI Command Center</div>
+    </div>
+    <div class="role-switcher">
+      <div class="role-btn active" onclick="roleSwitch(this,'owner')">Owner</div>
+      <div class="role-btn" onclick="roleSwitch(this,'salesrep')">Sales Rep</div>
+      <div class="role-btn" onclick="roleSwitch(this,'accounting')">Accountant</div>
+    </div>
+    <div class="topbar-clock" id="clock"></div>
+    <button class="btn btn-primary btn-sm">⬇ Export PDF</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ██████████████████████████████████
+         OWNER DASHBOARD
+    ██████████████████████████████████ -->
+    <div class="panel active" id="panel-owner">
+
+      <!-- Brand Strip -->
+      <div class="brand-strip">
+        <div>
+          <div class="brand-strip-logo"><span class="b">Blue</span>Bay Pack</div>
+          <div class="brand-strip-info">
+            <span>Packing Systems</span> — ISO 9001 Certified Company<br>
+            CR: <span>4030374577</span> &nbsp;|&nbsp; VAT: <span>312710826800003</span><br>
+            Saudi Arabia · www.bluebaypack.com
+          </div>
+        </div>
+        <div class="brand-strip-kpis">
+          <div class="bsk"><div class="bsk-val">$2.65M</div><div class="bsk-lbl">Revenue YTD</div></div>
+          <div class="bsk"><div class="bsk-val">33.8%</div><div class="bsk-lbl">EBITDA</div></div>
+          <div class="bsk"><div class="bsk-val">$1.92M</div><div class="bsk-lbl">Net Profit</div></div>
+          <div class="bsk"><div class="bsk-val">$8.0M</div><div class="bsk-lbl">Stock Value</div></div>
+        </div>
+        <div class="iso-badge">✅ ISO 9001 Certified</div>
+      </div>
+
+      <!-- STRATEGIC KPI STRIP -->
+      <div class="section-label">▲ Strategic KPI Strip — Real-Time Overview</div>
+      <div class="kpi-strip kpi-8">
+        <div class="kpi k-blue"><div class="kpi-lbl">Revenue YTD</div><div class="kpi-val" style="color:#4FC3F7">$2.65M</div><div class="kpi-sub up">↑ Jan 1 to today</div><div class="kpi-ico">💵</div></div>
+        <div class="kpi k-green"><div class="kpi-lbl">Net Profit YTD</div><div class="kpi-val" style="color:var(--bb-green)">$1.92M</div><div class="kpi-sub up">↑ After all expenses</div><div class="kpi-ico">📈</div></div>
+        <div class="kpi k-gold"><div class="kpi-lbl">EBITDA %</div><div class="kpi-val" style="color:var(--bb-gold)">33.8%</div><div class="kpi-sub" style="color:var(--bb-muted)">Operating perf.</div><div class="kpi-ico">⚡</div></div>
+        <div class="kpi k-cyan"><div class="kpi-lbl">Inventory Value</div><div class="kpi-val" style="color:#29B6F6">$8.0M</div><div class="kpi-sub" style="color:var(--bb-muted)">Total stock</div><div class="kpi-ico">📦</div></div>
+        <div class="kpi k-blue"><div class="kpi-lbl">Receivables</div><div class="kpi-val" style="color:#4FC3F7">$1.43M</div><div class="kpi-sub dn">↓ 3 overdue</div><div class="kpi-ico">📥</div></div>
+        <div class="kpi k-orange"><div class="kpi-lbl">Payables</div><div class="kpi-val" style="color:var(--bb-orange)">$708K</div><div class="kpi-sub" style="color:var(--bb-muted)">Outstanding</div><div class="kpi-ico">📤</div></div>
+        <div class="kpi k-silver"><div class="kpi-lbl">Cash Position</div><div class="kpi-val" style="color:var(--bb-silver)">$1.9M</div><div class="kpi-sub" style="color:var(--bb-muted)">Current</div><div class="kpi-ico">🏦</div></div>
+        <div class="kpi k-red"><div class="kpi-lbl">Net Cash Flow</div><div class="kpi-val" style="color:var(--bb-red)">-$34K</div><div class="kpi-sub dn">↓ Negative trend</div><div class="kpi-ico">⚠</div></div>
+      </div>
+
+      <!-- ROW 1: Revenue by Rep + Conversion -->
+      <div class="gw">
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">📊 Revenue by Sales Rep — Monthly</div>
+            <span class="card-sub">SAR · This month</span>
+          </div>
+          <div class="chart-wrap" style="height:155px"><canvas id="repChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🏆 Conversion Ranking</div></div>
+          <div class="stage-row"><div class="stage-dot" style="background:#4FC3F7"></div><span class="stage-name">Rantien Mintor</span><div class="stage-track"><div class="stage-bar" style="width:52%;background:#4FC3F7"></div></div><span class="stage-pct" style="color:#4FC3F7">52%</span></div>
+          <div class="stage-row"><div class="stage-dot" style="background:#00E676"></div><span class="stage-name">Shaen Winter</span><div class="stage-track"><div class="stage-bar" style="width:47%;background:#00E676"></div></div><span class="stage-pct" style="color:#00E676">47%</span></div>
+          <div class="stage-row"><div class="stage-dot" style="background:#CE93D8"></div><span class="stage-name">Marni Kirimar</span><div class="stage-track"><div class="stage-bar" style="width:32%;background:#CE93D8"></div></div><span class="stage-pct" style="color:#CE93D8">32%</span></div>
+          <div class="stage-row"><div class="stage-dot" style="background:#FFB300"></div><span class="stage-name">Ali Hassan</span><div class="stage-track"><div class="stage-bar" style="width:28%;background:#FFB300"></div></div><span class="stage-pct" style="color:#FFB300">28%</span></div>
+          <div class="stage-row"><div class="stage-dot" style="background:#FF6D00"></div><span class="stage-name">Sara Malik</span><div class="stage-track"><div class="stage-bar" style="width:21%;background:#FF6D00"></div></div><span class="stage-pct" style="color:#FF6D00">21%</span></div>
+        </div>
+      </div>
+
+      <!-- ROW 2: Forecast + Collection -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🎯 Forecast Pipeline (Weighted)</div></div>
+          <div class="chart-wrap" style="height:155px"><canvas id="forecastChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">💰 Collection Trend</div><span class="card-sub">Monthly SAR</span></div>
+          <div class="chart-wrap" style="height:155px"><canvas id="collChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ROW 3: Aging + Discount + Open Deals -->
+      <div class="g3">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">⏱ Aging Summary (30/60/90)</div></div>
+          <div class="prog-row"><div class="prog-lbl">0–30 Days</div><div class="prog-track"><div class="prog-fill" style="width:65%;background:var(--bb-green)"></div></div><div class="prog-val" style="color:var(--bb-green)">$560K</div></div>
+          <div class="prog-row"><div class="prog-lbl">31–60 Days</div><div class="prog-track"><div class="prog-fill" style="width:38%;background:var(--bb-gold)"></div></div><div class="prog-val" style="color:var(--bb-gold)">$318K</div></div>
+          <div class="prog-row"><div class="prog-lbl">61–90 Days</div><div class="prog-track"><div class="prog-fill" style="width:22%;background:var(--bb-orange)"></div></div><div class="prog-val" style="color:var(--bb-orange)">$187K</div></div>
+          <div class="prog-row"><div class="prog-lbl">90+ Days</div><div class="prog-track"><div class="prog-fill" style="width:11%;background:var(--bb-red)"></div></div><div class="prog-val" style="color:var(--bb-red)">$97K</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🔍 Discount Pattern by Rep</div></div>
+          <table>
+            <thead><tr><th>Rep</th><th>Avg Disc</th><th>High Disc Deals</th><th>Risk</th></tr></thead>
+            <tbody>
+              <tr><td>Rantien M.</td><td>3.2%</td><td>1</td><td><span class="badge b-green">Low</span></td></tr>
+              <tr><td>Shaen W.</td><td>8.7%</td><td>4</td><td><span class="badge b-gold">Medium</span></td></tr>
+              <tr><td>Marni K.</td><td style="color:var(--bb-red)">14.1%</td><td style="color:var(--bb-red)">7</td><td><span class="badge b-red">High ⚠</span></td></tr>
+              <tr><td>Ali H.</td><td>5.4%</td><td>2</td><td><span class="badge b-green">Low</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📌 Large Open Deals</div></div>
+          <table>
+            <thead><tr><th>Customer</th><th>Value</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>MegaCorp Ltd</td><td style="color:#4FC3F7;font-weight:700">$1,500K</td><td><span class="badge b-blue">High Value</span></td></tr>
+              <tr><td>GlobalPack Co</td><td style="color:#4FC3F7;font-weight:700">$635K</td><td><span class="badge b-gold">Pending</span></td></tr>
+              <tr><td>SaudiPack Inc</td><td style="color:#4FC3F7;font-weight:700">$300K</td><td><span class="badge b-blue">Active</span></td></tr>
+              <tr><td>EcoBrand SA</td><td style="color:#4FC3F7;font-weight:700">$230K</td><td><span class="badge b-blue">High Value</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ROW 4: HR + Commission + Inventory + Attrition -->
+      <div class="g4">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">👥 Headcount</div></div>
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <div class="metric-tile" style="flex:1"><div class="mt-val" style="color:#4FC3F7">10</div><div class="mt-lbl">Total</div></div>
+            <div class="metric-tile" style="flex:1"><div class="mt-val" style="color:var(--bb-green)">10</div><div class="mt-lbl">Active</div></div>
+          </div>
+          <div style="font-size:9px;color:var(--bb-muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.8px">Attendance Rate</div>
+          <div style="background:rgba(0,0,0,.3);border-radius:3px;height:7px;border:1px solid var(--bb-border)"><div style="width:92%;height:100%;background:var(--bb-green);border-radius:3px"></div></div>
+          <div style="font-size:10px;color:var(--bb-green);margin-top:5px;font-weight:700">92% — Excellent</div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">💎 Commission Liability</div></div>
+          <div style="font-family:'Rajdhani';font-size:30px;font-weight:700;color:var(--bb-gold)">$2,878</div>
+          <div style="font-size:9px;color:var(--bb-muted);margin-bottom:10px">Payout this cycle</div>
+          <div style="display:flex;gap:6px">
+            <div style="flex:1;background:rgba(79,195,247,.1);border:1px solid rgba(79,195,247,.2);border-radius:5px;padding:5px 7px;font-size:9px;color:#4FC3F7;font-weight:700;text-align:center">Base 2%</div>
+            <div style="flex:1;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.2);border-radius:5px;padding:5px 7px;font-size:9px;color:var(--bb-green);font-weight:700;text-align:center">Bonus 0.5%</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📉 Attrition %</div></div>
+          <div style="font-family:'Rajdhani';font-size:30px;font-weight:700;color:var(--bb-green)">0%</div>
+          <div style="font-size:9px;color:var(--bb-muted);margin-bottom:10px">No attrition this period</div>
+          <div style="font-size:9px;color:var(--bb-muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.8px">Productivity Score</div>
+          <div style="background:rgba(0,0,0,.3);border-radius:3px;height:7px;border:1px solid var(--bb-border)"><div style="width:78%;height:100%;background:#4FC3F7;border-radius:3px"></div></div>
+          <div style="font-size:10px;color:#4FC3F7;margin-top:5px;font-weight:700">78 / 100</div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🔄 Inventory Turnover</div></div>
+          <div style="font-family:'Rajdhani';font-size:30px;font-weight:700;color:#29B6F6">7x</div>
+          <div style="font-size:9px;color:var(--bb-muted);margin-bottom:10px">Annual ratio</div>
+          <div style="font-size:10px;display:flex;flex-direction:column;gap:5px">
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--bb-muted)">Stock-Out Risk</span><span class="badge b-gold">Attention</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--bb-muted)">Overstock Risk</span><span class="badge b-blue">Low</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--bb-muted)">Coverage Days</span><span style="font-weight:700;font-family:'Rajdhani';color:var(--bb-silver)">52d avg</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CRITICAL ALERTS -->
+      <div class="section-label">▲ Critical Control Alerts — Action Required</div>
+      <div class="alert-grid">
+        <div class="alert-tile at-red"><span class="alert-ico pulse">🔴</span><div><div class="alert-txt">High Discount Approvals</div><div class="alert-cnt">3 require CEO review</div></div></div>
+        <div class="alert-tile at-orange"><span class="alert-ico">🟠</span><div><div class="alert-txt">Large Pending Approvals</div><div class="alert-cnt">5 items awaiting</div></div></div>
+        <div class="alert-tile at-gold"><span class="alert-ico">🟡</span><div><div class="alert-txt">Uninvoiced Deliveries</div><div class="alert-cnt">2 pending invoicing</div></div></div>
+        <div class="alert-tile at-red"><span class="alert-ico pulse">🔴</span><div><div class="alert-txt">Overdue Above Threshold</div><div class="alert-cnt">$97K at risk</div></div></div>
+        <div class="alert-tile at-orange"><span class="alert-ico">🟠</span><div><div class="alert-txt">Budget Overruns</div><div class="alert-cnt">1 department flagged</div></div></div>
+        <div class="alert-tile at-red"><span class="alert-ico pulse">🔴</span><div><div class="alert-txt">Stock Below Safety</div><div class="alert-cnt">3 SKUs critical</div></div></div>
+      </div>
+    </div>
+
+    <!-- ██████████████████████████████████
+         SALES REP VIEW
+    ██████████████████████████████████ -->
+    <div class="panel" id="panel-salesrep">
+
+      <div class="section-label">▲ Sales Rep KPI Strip — My Performance</div>
+      <div class="kpi-strip kpi-8">
+        <div class="kpi k-blue"><div class="kpi-lbl">Total Quotes</div><div class="kpi-val">22</div><div class="kpi-sub" style="color:var(--bb-muted)">This month</div></div>
+        <div class="kpi k-green"><div class="kpi-lbl">Confirmed</div><div class="kpi-val" style="color:var(--bb-green)">15</div><div class="kpi-sub up">↑ 3 this week</div></div>
+        <div class="kpi k-red"><div class="kpi-lbl">Lost Deals</div><div class="kpi-val" style="color:var(--bb-red)">4</div><div class="kpi-sub dn">35,000 SAR</div></div>
+        <div class="kpi k-gold"><div class="kpi-lbl">Conversion %</div><div class="kpi-val" style="color:var(--bb-gold)">34%</div><div class="kpi-sub" style="color:var(--bb-muted)">Target: 40%</div></div>
+        <div class="kpi k-cyan"><div class="kpi-lbl">Revenue MTD</div><div class="kpi-val" style="color:#29B6F6">145K</div><div class="kpi-sub" style="color:var(--bb-muted)">SAR</div></div>
+        <div class="kpi k-orange"><div class="kpi-lbl">Above 50K</div><div class="kpi-val" style="color:var(--bb-orange)">4</div><div class="kpi-sub" style="color:var(--bb-muted)">Deals</div></div>
+        <div class="kpi k-purple"><div class="kpi-lbl">Est. Commission</div><div class="kpi-val" style="color:#CE93D8">7,250</div><div class="kpi-sub" style="color:var(--bb-muted)">SAR</div></div>
+        <div class="kpi k-red"><div class="kpi-lbl">Avg Discount</div><div class="kpi-val" style="color:var(--bb-red)">8.7%</div><div class="kpi-sub dn">↓ High — review</div></div>
+      </div>
+
+      <div class="gw3">
+        <!-- QUOTE AGING CONTROL -->
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">📋 Quote Aging Control — G/Y/R Logic</div>
+            <div style="display:flex;gap:5px">
+              <span class="badge b-green">● &lt;7d</span>
+              <span class="badge b-gold">● 7–14d</span>
+              <span class="badge b-red">● 14d+</span>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Quote #</th><th>Customer</th><th>Amount (SAR)</th><th>Created</th><th>Days</th><th>Aging</th><th>Next Activity</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td style="color:#4FC3F7;font-weight:700">000115</td><td>XYZ Corp</td><td>145,000</td><td>Dec 17</td><td class="qa-g">5d</td><td><span class="badge b-green">Green ✓</span></td><td>Call scheduled</td><td><button class="btn-action" onclick="toast('✅ Reminder sent to XYZ Corp!')">Remind</button></td></tr>
+              <tr><td style="color:#4FC3F7;font-weight:700">000116</td><td>XYZ Corp</td><td>45,000</td><td>Dec 17</td><td class="qa-y">12d</td><td><span class="badge b-gold">Yellow ⚡</span></td><td>Email pending</td><td><button class="btn-action" onclick="toast('✅ Follow-up email sent!')">Remind</button></td></tr>
+              <tr><td style="color:#4FC3F7;font-weight:700">000214</td><td>Sentinel Corp</td><td>3,000</td><td>Dec 18</td><td class="qa-y">11d</td><td><span class="badge b-gold">Yellow ⚡</span></td><td>Next activity</td><td><button class="btn-action" onclick="toast('✅ Reminder triggered!')">Remind</button></td></tr>
+              <tr><td style="color:#4FC3F7;font-weight:700">000557</td><td>XYZ Corp</td><td>78,000</td><td>Oct 17</td><td class="qa-r">48d</td><td><span class="badge b-red">Red 🚨</span></td><td>OVERDUE!</td><td><button class="btn-escalate" onclick="toast('🚨 Escalated to manager!')">Escalate</button></td></tr>
+              <tr><td style="color:#4FC3F7;font-weight:700">000383</td><td>XYZ Corp</td><td>60,000</td><td>Oct 17</td><td class="qa-r">62d</td><td><span class="badge b-red">Red 🚨</span></td><td>URGENT!</td><td><button class="btn-escalate" onclick="toast('🚨 Escalated to owner!')">Owner Alert</button></td></tr>
+            </tbody>
+          </table>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-outline btn-sm" onclick="toast('📋 Pending quotations list opened!')">Pending Quotations</button>
+            <button class="btn btn-outline btn-sm" onclick="toast('📞 Enquiries follow-up list opened!')">Follow-up Enquiries</button>
+            <button class="btn btn-primary btn-sm" onclick="toast('✅ All reminders sent!')">Send All Reminders</button>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">📊 My Pipeline</div></div>
+            <div class="stage-row"><div class="stage-dot" style="background:#4FC3F7"></div><span class="stage-name">Qualification</span><div class="stage-track"><div class="stage-bar" style="width:80%;background:#4FC3F7"></div></div><span class="stage-pct" style="color:#4FC3F7">350K</span></div>
+            <div class="stage-row"><div class="stage-dot" style="background:#FFB300"></div><span class="stage-name">Proposal</span><div class="stage-track"><div class="stage-bar" style="width:55%;background:#FFB300"></div></div><span class="stage-pct" style="color:#FFB300">240K</span></div>
+            <div class="stage-row"><div class="stage-dot" style="background:#00E676"></div><span class="stage-name">Negotiation</span><div class="stage-track"><div class="stage-bar" style="width:30%;background:#00E676"></div></div><span class="stage-pct" style="color:#00E676">130K</span></div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">🧾 My Expenses</div></div>
+            <table>
+              <thead><tr><th>Description</th><th>Amount</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Expense - Travel</td><td>$100</td><td><span class="badge b-green">Approved</span></td></tr>
+                <tr><td>Expense Printing</td><td>$30</td><td><span class="badge b-blue">Submitted</span></td></tr>
+                <tr><td>Market Expense</td><td>$15</td><td><span class="badge b-gold">Pending</span></td></tr>
+              </tbody>
+            </table>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;font-weight:700">
+              <span style="color:var(--bb-muted)">Total Spent</span><span style="color:var(--bb-gold)">1,200 SAR</span>
+            </div>
+            <button class="btn btn-primary btn-sm" style="width:100%;margin-top:8px" onclick="toast('💳 Expense request created!')">+ New Expense Request</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- HIGH PRIORITY ACTIONS -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">🚨 High-Priority Action List — Overdue Activities</div>
+          <span class="badge b-red pulse">4 Overdue</span>
+        </div>
+        <table>
+          <thead><tr><th>Priority</th><th>Customer</th><th>Action Required</th><th>Due</th><th>Days Late</th><th>Do Now</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge b-red">🔴 Critical</span></td><td>XYZ Corp</td><td>Payment follow-up — 78K SAR outstanding</td><td>Dec 1</td><td class="qa-r">48d</td><td><button class="btn-action" onclick="toast('💬 Payment reminder sent to XYZ Corp!')">Send Reminder</button></td></tr>
+            <tr><td><span class="badge b-red">🔴 Critical</span></td><td>XYZ Corp</td><td>Quote 000383 — No response for 62 days</td><td>Oct 17</td><td class="qa-r">62d</td><td><button class="btn-escalate" onclick="toast('🚨 Escalated to owner!')">Owner Alert</button></td></tr>
+            <tr><td><span class="badge b-gold">🟡 Medium</span></td><td>Sentinel Corp</td><td>Proposal pending approval — 11 days</td><td>Dec 18</td><td class="qa-y">11d</td><td><button class="btn-action" onclick="toast('✅ Follow-up sent!')">Follow Up</button></td></tr>
+            <tr><td><span class="badge b-blue">🔵 Low</span></td><td>ABC Group</td><td>Schedule demo meeting</td><td>Dec 20</td><td class="qa-g">2d</td><td><button class="btn-action" onclick="toast('📅 Meeting invite sent!')">Schedule</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ██████████████████████████████████
+         ACCOUNTING & AGING
+    ██████████████████████████████████ -->
+    <div class="panel" id="panel-accounting">
+
+      <div class="kpi-strip kpi-6">
+        <div class="kpi k-blue"><div class="kpi-lbl">Invoiced MTD</div><div class="kpi-val" style="color:#4FC3F7">$45K</div><div class="kpi-ico">🧾</div></div>
+        <div class="kpi k-green"><div class="kpi-lbl">Cash Collected</div><div class="kpi-val" style="color:var(--bb-green)">$38K</div><div class="kpi-ico">✅</div></div>
+        <div class="kpi k-red"><div class="kpi-lbl">Outstanding</div><div class="kpi-val" style="color:var(--bb-red)">$122K</div><div class="kpi-sub dn">↓ 3 overdue</div></div>
+        <div class="kpi k-gold"><div class="kpi-lbl">Total Payables</div><div class="kpi-val" style="color:var(--bb-gold)">$55K</div></div>
+        <div class="kpi k-cyan"><div class="kpi-lbl">Net Cash</div><div class="kpi-val" style="color:#29B6F6">$37K</div></div>
+        <div class="kpi k-orange"><div class="kpi-lbl">MTD Expenses</div><div class="kpi-val" style="color:var(--bb-orange)">$21K</div></div>
+      </div>
+
+      <div class="gw2">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <!-- Escalation Ladder -->
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">🪜 Escalation Ladder</div><span class="card-sub">Collection discipline</span></div>
+            <div class="esc-item esc-1">
+              <div class="esc-ico">📧</div>
+              <div><div class="esc-title">7 Days → Accounting Reminder</div><div class="esc-desc">Auto-send payment reminder email from Accounting</div></div>
+              <span class="esc-tag" style="background:rgba(255,179,0,.15);color:var(--bb-gold)">AUTO</span>
+            </div>
+            <div class="esc-item esc-2">
+              <div class="esc-ico">📞</div>
+              <div><div class="esc-title">15 Days → Sales Rep Notified</div><div class="esc-desc">Rep must call customer & log response within 24h</div></div>
+              <span class="esc-tag" style="background:rgba(255,109,0,.15);color:var(--bb-orange)">NOTIFY</span>
+            </div>
+            <div class="esc-item esc-3">
+              <div class="esc-ico">🚨</div>
+              <div><div class="esc-title">30 Days → Owner Alert</div><div class="esc-desc">Executive decision required — direct owner action</div></div>
+              <span class="esc-tag" style="background:rgba(255,23,68,.15);color:var(--bb-red)">URGENT</span>
+            </div>
+          </div>
+          <!-- VAT + Compliance -->
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">📑 VAT & Compliance</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px">
+              <div><div style="color:var(--bb-muted);font-size:9px">VAT Payable</div><div style="font-weight:700;color:var(--bb-red)">$11,500</div></div>
+              <div><div style="color:var(--bb-muted);font-size:9px">VAT Receivable</div><div style="font-weight:700;color:var(--bb-green)">$4,200</div></div>
+              <div><div style="color:var(--bb-muted);font-size:9px">Next Filing</div><div style="font-weight:700;color:var(--bb-gold)">Oct 15, 2024</div></div>
+              <div><div style="color:var(--bb-muted);font-size:9px">Payroll Liability</div><div style="font-weight:700">$32,000</div></div>
+              <div><div style="color:var(--bb-muted);font-size:9px">Commission Payable</div><div style="font-weight:700">$1,800</div></div>
+              <div><div style="color:var(--bb-muted);font-size:9px">Accrued Expenses</div><div style="font-weight:700">$14,000</div></div>
+            </div>
+          </div>
+          <!-- 30-day cash forecast -->
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">🔭 30-Day Cash Forecast</div></div>
+            <div class="cf-row"><span style="color:var(--bb-muted)">Expected Receipts</span><span style="color:var(--bb-green);font-weight:700;font-family:'Rajdhani';font-size:15px">$310,000</span></div>
+            <div class="cf-row"><span style="color:var(--bb-muted)">Expected Payments</span><span style="color:var(--bb-red);font-weight:700;font-family:'Rajdhani';font-size:15px">$245,000</span></div>
+            <div class="cf-row"><span style="font-weight:700">Projected Balance</span><span style="color:#4FC3F7;font-weight:800;font-family:'Rajdhani';font-size:18px">$65,000</span></div>
+          </div>
+        </div>
+
+        <!-- Invoice Aging + Charts -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">📊 Invoice Aging Control</div><button class="btn btn-primary btn-sm" onclick="toast('✅ All reminders queued!')">Send All Reminders</button></div>
+            <div class="aging-blocks">
+              <div class="aging-block ab-safe"><div class="ab-val" style="color:var(--bb-green)">$70K</div><div class="ab-lbl">0–30 Days</div></div>
+              <div class="aging-block ab-caution"><div class="ab-val" style="color:var(--bb-gold)">$30K</div><div class="ab-lbl">31–60 Days</div></div>
+              <div class="aging-block ab-warn"><div class="ab-val" style="color:var(--bb-orange)">$19K</div><div class="ab-lbl">61–90 Days</div></div>
+              <div class="aging-block ab-danger"><div class="ab-val" style="color:var(--bb-red)">$7K</div><div class="ab-lbl">90+ Days</div></div>
+            </div>
+            <table>
+              <thead><tr><th>Customer</th><th>Invoice</th><th>Amount</th><th>Days Overdue</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>Customer 1</td><td style="color:#4FC3F7">INV-001</td><td style="color:var(--bb-red)">$5,000</td><td class="qa-r">45d</td><td><button class="btn-action" onclick="toast('✅ Reminder sent!')">Remind</button></td></tr>
+                <tr><td>Customer 2</td><td style="color:#4FC3F7">INV-003</td><td style="color:var(--bb-gold)">$4,500</td><td class="qa-y">22d</td><td><button class="btn-action" onclick="toast('✅ Reminder sent!')">Remind</button></td></tr>
+                <tr><td>Customer 3</td><td style="color:#4FC3F7">INV-007</td><td style="color:var(--bb-gold)">$3,200</td><td class="qa-y">18d</td><td><button class="btn-action" onclick="toast('✅ Reminder sent!')">Remind</button></td></tr>
+                <tr><td>Customer 4</td><td style="color:#4FC3F7">INV-012</td><td>$2,100</td><td class="qa-g">5d</td><td><button class="btn-action" onclick="toast('✅ Reminder sent!')">Remind</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">📈 Monthly Cash Inflow vs Outflow</div></div>
+            <div class="chart-wrap" style="height:155px"><canvas id="cashChart"></canvas></div>
+          </div>
+          <!-- Profit Monitor -->
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">📉 Profit & Margin Monitor</div></div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+              <div class="metric-tile"><div class="mt-val" style="color:var(--bb-green)">42%</div><div class="mt-lbl">Gross Margin</div></div>
+              <div class="metric-tile"><div class="mt-val" style="color:var(--bb-gold)">28%</div><div class="mt-lbl">Expense Ratio</div></div>
+              <div class="metric-tile"><div class="mt-val" style="color:var(--bb-red)">2</div><div class="mt-lbl">Neg. Margin Inv.</div></div>
+              <div class="metric-tile"><div class="mt-val" style="color:var(--bb-orange)">4</div><div class="mt-lbl">High Disc Inv.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIPELINE PANEL -->
+    <div class="panel" id="panel-pipeline">
+      <div class="g2">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📊 Pipeline by Stage (SAR)</div></div>
+          <div class="chart-wrap" style="height:200px"><canvas id="pipeChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🎯 Weighted Forecast</div></div>
+          <table>
+            <thead><tr><th>Stage</th><th>Total</th><th>Weighted</th><th>Probability</th></tr></thead>
+            <tbody>
+              <tr><td>Qualification</td><td>$350K</td><td style="color:#4FC3F7">$105K</td><td><span class="badge b-blue">30%</span></td></tr>
+              <tr><td>Proposal</td><td>$240K</td><td style="color:#4FC3F7">$120K</td><td><span class="badge b-gold">50%</span></td></tr>
+              <tr><td>Negotiation</td><td>$130K</td><td style="color:#4FC3F7">$91K</td><td><span class="badge b-orange">70%</span></td></tr>
+              <tr><td><strong>Total</strong></td><td><strong>$720K</strong></td><td style="color:var(--bb-green);font-weight:800;font-family:'Rajdhani';font-size:14px">$316K</td><td>–</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:12px;padding:10px;background:rgba(79,195,247,.07);border:1px solid rgba(79,195,247,.2);border-radius:8px">
+            <div style="font-size:9px;color:var(--bb-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Expected Close — Q1</div>
+            <div style="font-family:'Rajdhani';font-size:22px;font-weight:700;color:#4FC3F7">$316,000 SAR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUOTES PANEL -->
+    <div class="panel" id="panel-quotes">
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">📋 All Quote Aging — Full View</div>
+          <button class="btn btn-primary btn-sm" onclick="toast('✅ All reminders sent!')">Send All Reminders</button>
+        </div>
+        <table>
+          <thead><tr><th>Quote #</th><th>Customer</th><th>Amount (SAR)</th><th>Created</th><th>Days Old</th><th>Status</th><th>Rep</th><th>Next Action</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#4FC3F7;font-weight:700">Q-2024-001</td><td>MegaCorp Ltd</td><td>$145,000</td><td>Mar 15</td><td class="qa-g">6d</td><td><span class="badge b-green">Green ✓</span></td><td>Rantien M.</td><td>Demo call</td><td><button class="btn-action" onclick="toast('✅ Reminder sent!')">Remind</button></td></tr>
+            <tr><td style="color:#4FC3F7;font-weight:700">Q-2024-002</td><td>GlobalPack Co</td><td>$78,000</td><td>Mar 10</td><td class="qa-y">11d</td><td><span class="badge b-gold">Yellow ⚡</span></td><td>Shaen W.</td><td>Follow-up call</td><td><button class="btn-action" onclick="toast('✅ Reminder sent!')">Remind</button></td></tr>
+            <tr><td style="color:#4FC3F7;font-weight:700">Q-2024-003</td><td>SaudiPack Inc</td><td>$42,000</td><td>Feb 28</td><td class="qa-r">21d</td><td><span class="badge b-red">Red 🚨</span></td><td>Ali H.</td><td>URGENT call</td><td><button class="btn-escalate" onclick="toast('🚨 Escalated!')">Escalate</button></td></tr>
+            <tr><td style="color:#4FC3F7;font-weight:700">Q-2024-004</td><td>EcoBrand SA</td><td>$19,500</td><td>Feb 10</td><td class="qa-r">39d</td><td><span class="badge b-red">Red 🚨</span></td><td>Marni K.</td><td>Last attempt</td><td><button class="btn-escalate" onclick="toast('🚨 Owner alerted!')">Owner Alert</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- COLLECTION PANEL -->
+    <div class="panel" id="panel-collection">
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">💰 Collection Aging — Detailed View</div><button class="btn btn-primary btn-sm" onclick="toast('✅ Bulk reminders sent!')">Send All</button></div>
+        <table>
+          <thead><tr><th>Customer</th><th>Total Outstanding</th><th>0–30d</th><th>31–60d</th><th>60+d</th><th>Rep</th><th>Last Contact</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><strong>MegaCorp Ltd</strong></td><td style="color:var(--bb-red);font-weight:700">$87,000</td><td style="color:var(--bb-green)">$50K</td><td style="color:var(--bb-gold)">$22K</td><td style="color:var(--bb-red)">$15K</td><td>Rantien M.</td><td>2 days ago</td><td><button class="btn-action" onclick="toast('✅ Reminder sent!')">Remind</button></td></tr>
+            <tr><td><strong>GlobalPack Co</strong></td><td style="color:var(--bb-gold);font-weight:700">$35,000</td><td style="color:var(--bb-green)">$20K</td><td style="color:var(--bb-gold)">$15K</td><td>—</td><td>Shaen W.</td><td>Today</td><td><button class="btn-action" onclick="toast('✅ Reminder sent!')">Remind</button></td></tr>
+            <tr><td><strong>SaudiPack Inc</strong></td><td style="font-weight:700">$12,000</td><td style="color:var(--bb-green)">$12K</td><td>—</td><td>—</td><td>Ali H.</td><td>Yesterday</td><td><button class="btn-action" onclick="toast('✅ Reminder sent!')">Remind</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TOP 10 CUSTOMERS -->
+    <div class="panel" id="panel-top10">
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">🏆 Top 10 Customers — Revenue + Margin + Dependency Risk</div><span class="card-sub">BlueBay Pack · Current Period</span></div>
+        <table>
+          <thead><tr><th>Rank</th><th>Customer</th><th>Revenue MTD</th><th>Gross Margin</th><th>% of Total Rev.</th><th>Dependency Risk</th><th>Payment History</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--bb-gold);font-weight:800;font-family:'Rajdhani';font-size:14px">#1</td><td><strong>MegaCorp Ltd</strong></td><td style="color:#4FC3F7;font-weight:700">$420K</td><td style="color:var(--bb-green)">44%</td><td style="color:var(--bb-red);font-weight:700">31%</td><td><span class="badge b-red">High Risk ⚠</span></td><td><span class="badge b-green">Excellent</span></td></tr>
+            <tr><td style="color:var(--bb-muted);font-family:'Rajdhani';font-size:14px">#2</td><td>GlobalPack Co</td><td style="color:#4FC3F7">$280K</td><td style="color:var(--bb-green)">38%</td><td>21%</td><td><span class="badge b-gold">Medium</span></td><td><span class="badge b-green">Good</span></td></tr>
+            <tr><td style="color:var(--bb-muted);font-family:'Rajdhani';font-size:14px">#3</td><td>SaudiPack Inc</td><td style="color:#4FC3F7">$195K</td><td style="color:var(--bb-gold)">29%</td><td>14%</td><td><span class="badge b-green">Low</span></td><td><span class="badge b-gold">Average</span></td></tr>
+            <tr><td style="color:var(--bb-muted);font-family:'Rajdhani';font-size:14px">#4</td><td>EcoBrand SA</td><td style="color:#4FC3F7">$142K</td><td style="color:var(--bb-green)">41%</td><td>11%</td><td><span class="badge b-green">Low</span></td><td><span class="badge b-green">Good</span></td></tr>
+            <tr><td style="color:var(--bb-muted);font-family:'Rajdhani';font-size:14px">#5</td><td>PrimePack LLC</td><td style="color:#4FC3F7">$98K</td><td style="color:var(--bb-gold)">33%</td><td>7%</td><td><span class="badge b-green">Low</span></td><td><span class="badge b-green">Excellent</span></td></tr>
+          </tbody>
+        </table>
+        <div class="risk-alert">
+          <span style="font-size:20px">⚠</span>
+          <span><strong style="color:var(--bb-red)">Concentration Risk Alert:</strong> <span style="color:var(--bb-muted)">MegaCorp Ltd represents 31% of total revenue — high dependency risk. Recommend diversifying customer base across Saudi Arabia & GCC markets.</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="panel" id="panel-inventory">
+      <div class="kpi-strip kpi-4">
+        <div class="kpi k-blue"><div class="kpi-lbl">Current Stock Value</div><div class="kpi-val" style="color:#4FC3F7">$1.337M</div><div class="kpi-ico">📦</div></div>
+        <div class="kpi k-green"><div class="kpi-lbl">Incoming PO Value</div><div class="kpi-val" style="color:var(--bb-green)">$1.9M</div><div class="kpi-ico">🚚</div></div>
+        <div class="kpi k-red"><div class="kpi-lbl">Stock-Out Risk</div><div class="kpi-val" style="color:var(--bb-red)">3 SKUs</div><div class="kpi-sub dn">↓ Action required</div></div>
+        <div class="kpi k-gold"><div class="kpi-lbl">Overstock Risk</div><div class="kpi-val" style="color:var(--bb-gold)">5 SKUs</div><div class="kpi-sub" style="color:var(--bb-muted)">Review reorder</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">📦 Forecasted Stock Coverage — Packing Products</div><button class="btn btn-outline btn-sm" onclick="toast('📊 Export initiated!')">Export Report</button></div>
+        <table>
+          <thead><tr><th>SKU</th><th>Product</th><th>On Hand</th><th>Coverage Days</th><th>Coverage Weeks</th><th>Risk Level</th><th>Reorder Status</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#4FC3F7">PRD-001</td><td>Stretch Wrap Film (LLDPE)</td><td>4,200 rolls</td><td style="color:var(--bb-green)">62d</td><td>9w</td><td><span class="badge b-green">Safe</span></td><td><span class="badge b-muted">Not Required</span></td></tr>
+            <tr><td style="color:#4FC3F7">PRD-002</td><td>PP Strapping Band 19mm</td><td>800 coils</td><td style="color:var(--bb-gold)">18d</td><td>3w</td><td><span class="badge b-gold">Attention</span></td><td><span class="badge b-blue">Order Suggested</span></td></tr>
+            <tr><td style="color:#4FC3F7">PRD-003</td><td>Heat Shrink Tunnel M-200</td><td>3 units</td><td style="color:var(--bb-red)">4d</td><td>&lt;1w</td><td><span class="badge b-red">🚨 Critical</span></td><td><button class="btn-escalate" onclick="toast('🚨 PO created for PRD-003!')">Order NOW</button></td></tr>
+            <tr><td style="color:#4FC3F7">PRD-004</td><td>Carton Sealer M-40</td><td>12 units</td><td style="color:var(--bb-gold)">21d</td><td>3w</td><td><span class="badge b-gold">Attention</span></td><td><span class="badge b-blue">Order Suggested</span></td></tr>
+            <tr><td style="color:#4FC3F7">PRD-005</td><td>PET Strap 16mm</td><td>2,400 coils</td><td style="color:var(--bb-green)">45d</td><td>6w</td><td><span class="badge b-green">Safe</span></td><td><span class="badge b-muted">Not Required</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<div class="toast" id="toast">
+  <span class="toast-ico" id="toastIco">✅</span>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script src="/live.js"></script><script>
+// ── NAVIGATION ──
+const panelTitles = {
+  owner:'Owner Dashboard', salesrep:'Sales Rep View', accounting:'Accounting & Aging Dashboard',
+  pipeline:'Pipeline & Forecast', quotes:'Quote Aging Control', collection:'Collection Aging',
+  top10:'Top 10 Customers', inventory:'Inventory Intelligence'
+};
+
+function go(el, id) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+id).classList.add('active');
+  document.getElementById('pgTitle').textContent = panelTitles[id] || id;
+  renderCharts(id);
+}
+
+function roleSwitch(el, id) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const navEl = document.querySelector(`.nav-item[onclick*="'${id}'"]`);
+  if(navEl) go(navEl, id);
+}
+
+// ── TOAST ──
+function toast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── CLOCK ──
+function updateClock() {
+  const n = new Date();
+  document.getElementById('clock').textContent =
+    n.toLocaleDateString('en-SA', {weekday:'short',day:'numeric',month:'short'}) + '  ' +
+    n.toLocaleTimeString('en-SA', {hour:'2-digit',minute:'2-digit'});
+}
+updateClock(); setInterval(updateClock, 1000);
+
+// ── CHARTS ──
+Chart.defaults.color = '#6893BF';
+Chart.defaults.font.family = 'Montserrat';
+Chart.defaults.font.size = 10;
+const CI = {};
+const destroy = id => { if(CI[id]){ CI[id].destroy(); delete CI[id]; } };
+
+function renderCharts(panel) {
+  // Common grid line color
+  const grid = 'rgba(30,66,120,.5)';
+
+  if (panel === 'owner') {
+    destroy('repChart');
+    CI['repChart'] = new Chart(document.getElementById('repChart'), {
+      type: 'bar',
+      data: {
+        labels: L('reps','labels',['Rantien M.','Shaen W.','Marni K.','Ali H.','Sara M.']),
+        datasets: [{
+          label: 'Revenue (SAR)',
+          data: L('reps','values',[420000,280000,195000,142000,98000]),
+          backgroundColor: ['#4FC3F7','#29B6F6','#CE93D8','#FFB300','#FF6D00'],
+          borderRadius: 6, borderSkipped: false,
+        }]
+      },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
+        scales:{ x:{grid:{color:grid}}, y:{grid:{color:grid}, ticks:{callback:v=>`${v/1000}K`}} } }
+    });
+
+    destroy('forecastChart');
+    CI['forecastChart'] = new Chart(document.getElementById('forecastChart'), {
+      type: 'doughnut',
+      data: {
+        labels: LP(['Qualification','Proposal','Negotiation'],'labels'),
+        datasets: [{ data:LP([350,240,130],'values'), backgroundColor:['#4FC3F7','#FFB300','#00E676'], borderWidth:0, hoverOffset:8 }]
+      },
+      options: { responsive:true, maintainAspectRatio:false, cutout:'62%',
+        plugins:{ legend:{ position:'right', labels:{padding:14,font:{size:10}} } } }
+    });
+
+    destroy('collChart');
+    CI['collChart'] = new Chart(document.getElementById('collChart'), {
+      type: 'line',
+      data: {
+        labels: L('collections','labels',['Jan','Feb','Mar','Apr','May','Jun']),
+        datasets: [{
+          label: 'Collected (SAR)', data: L('collections','values',[65000,72000,58000,81000,74000,90000]),
+          borderColor: '#4FC3F7', backgroundColor: 'rgba(79,195,247,.1)',
+          fill:true, tension:.4, pointRadius:3, pointBackgroundColor:'#4FC3F7'
+        }]
+      },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
+        scales:{ x:{grid:{color:grid}}, y:{grid:{color:grid}, ticks:{callback:v=>`${v/1000}K`}} } }
+    });
+  }
+
+  if (panel === 'accounting') {
+    destroy('cashChart');
+    CI['cashChart'] = new Chart(document.getElementById('cashChart'), {
+      type: 'bar',
+      data: {
+        labels: L('cashflow','labels',['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']),
+        datasets: [
+          { label:'Inflow', data:L('cashflow','inflow',[50,42,65,38,72,55,61,48,70,58,63,80].map(v=>v*1000)), backgroundColor:'rgba(0,230,118,.6)', borderRadius:4 },
+          { label:'Outflow', data:L('cashflow','outflow',[38,35,52,30,58,44,50,40,55,46,48,62].map(v=>v*1000)), backgroundColor:'rgba(255,23,68,.5)', borderRadius:4 }
+        ]
+      },
+      options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ position:'top', labels:{padding:12} } },
+        scales:{ x:{grid:{color:grid}}, y:{grid:{color:grid}, ticks:{callback:v=>`${v/1000}K`}} } }
+    });
+  }
+
+  if (panel === 'pipeline') {
+    destroy('pipeChart');
+    CI['pipeChart'] = new Chart(document.getElementById('pipeChart'), {
+      type: 'bar',
+      data: {
+        labels: LP(['Qualification','Proposal','Negotiation','Won','Lost'],'labels',true),
+        datasets: [{ data:LP([350,240,130,420,95],'values',true), backgroundColor:['#4FC3F7','#FFB300','#29B6F6','#00E676','#FF1744'], borderRadius:6 }]
+      },
+      options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
+        scales:{ x:{grid:{color:grid}}, y:{grid:{display:false}} } }
+    });
+  }
+}
+
+renderCharts('owner');
+</script>
+</body>
+</html>
